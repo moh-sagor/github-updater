@@ -24,7 +24,7 @@ The package uses Laravel's auto-discovery to register the service provider. If a
 ```php
 'providers' => [
     // ...
-    Sagor\GithubUpdater\GithubUpdaterServiceProvider::class,
+    Sagor\\GithubUpdater\\Providers\\GithubUpdaterServiceProvider::class,
 ],
 ```
 
