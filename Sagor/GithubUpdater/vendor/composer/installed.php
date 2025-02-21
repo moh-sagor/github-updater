@@ -3,7 +3,7 @@
         'name' => 'sagor/github-updater',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '7fdd830f0622c82282c14f42971ae233c4471b53',
+        'reference' => '2f9a1c6e80b14a337de3c5b35e48c69a9c4fc68c',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -776,7 +776,7 @@
         'sagor/github-updater' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '7fdd830f0622c82282c14f42971ae233c4471b53',
+            'reference' => '2f9a1c6e80b14a337de3c5b35e48c69a9c4fc68c',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
