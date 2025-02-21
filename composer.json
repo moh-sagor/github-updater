@@ -20,7 +20,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Sagor\\GithubUpdater\\GithubUpdaterServiceProvider"
+                "Sagor\\GithubUpdater\\Providers\\GithubUpdaterServiceProvider"
             ]
         }
     },
