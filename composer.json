@@ -17,6 +17,13 @@
             "Sagor\\GithubUpdater\\": "src/"
         }
     },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Sagor\\GithubUpdater\\GithubUpdaterServiceProvider"
+            ]
+        }
+    },
     "authors": [
         {
             "name": "Md Sagor Hossain",
@@ -25,13 +32,6 @@
     ],
     "minimum-stability": "stable",
     "keywords": ["laravel", "github", "updater", "git", "artisan"],
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Sagor\\GithubUpdater\\GithubUpdaterServiceProvider"
-            ]
-        }
-    },
     "homepage": "https://github.com/moh-sagor/github-updater",
     "repository": {
         "type": "git",
