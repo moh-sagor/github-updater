@@ -12,8 +12,10 @@ class GithubUpdaterServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__ . '/Routes/web.php');
 
         // Load Config
+        $configPath = function_exists('config_path') ? config_path('github-updater.php') : base_path('config/github-updater.php');
+
         $this->publishes([
-            __DIR__ . '/config/github-updater.php' => config_path('github-updater.php'),
+            __DIR__ . '/config/github-updater.php' => $configPath,
         ], 'config');
 
         // Register Console Commands
