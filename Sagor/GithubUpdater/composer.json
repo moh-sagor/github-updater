@@ -1,0 +1,45 @@
+{
+    "name": "sagor/github-updater",
+    "description": "A Laravel package for automated Github pulls and Artisan commands by moh-sagor.",
+    "type": "library",
+    "require": {
+        "php": "^7.4|^8.1",
+        "symfony/process": "^4.4|^5.0|^6.4|^7.0",
+        "illuminate/support": "^8.0|^9.0|^10.0|^11.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0",
+        "orchestra/testbench": "^6.0|^7.0|^8.0"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Sagor\\GithubUpdater\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Sagor\\GithubUpdater\\GithubUpdaterServiceProvider"
+            ]
+        }
+    },
+    "authors": [
+        {
+            "name": "Md Sagor Hossain",
+            "email": "sagorhassain4@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "keywords": ["laravel", "github", "updater", "git", "artisan"],
+    "homepage": "https://github.com/moh-sagor/github-updater",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/moh-sagor/github-updater.git"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Sagor\\GithubUpdater\\Tests\\": "tests/"
+        }
+    }
+}
