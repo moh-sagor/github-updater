@@ -6,3 +6,5 @@ return [
     'github_repo_link' => env('GITHUB_REPO_LINK', ''),
     'artisan_commands' => env('ARTISAN_COMMANDS', 'php artisan migrate --force, php artisan db:seed'),
 ];
+
+

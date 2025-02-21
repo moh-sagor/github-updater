@@ -29,8 +29,8 @@ class GithubUpdaterServiceProvider extends ServiceProvider
     public function boot()
     {
         // Define paths
-        $this->configPath = __DIR__ . '/../../config/github-updater.php';
-        $this->routesPath = __DIR__ . '/../../Routes/web.php';
+        $this->configPath = __DIR__ . '/../config/github-updater.php'; 
+        $this->routesPath = __DIR__ . '/../Routes/web.php'; 
 
         // Load Routes
         if (file_exists($this->routesPath)) {
