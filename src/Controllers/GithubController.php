@@ -20,12 +20,28 @@ class GithubController
 
         $repositoryUrl = "https://$userName:$githubToken@$repoLink";
 
+        $artisanCommandsArray = explode(',', $artisanCommands);
+
         $commands = [
             "git pull $repositoryUrl",
-            $artisanCommands,
         ];
 
+        foreach ($artisanCommandsArray as $command) {
+            $commands[] = trim($command);
+        }
+
+        // ASCII Art for "SAGOR"
+        $sagorAsciiArt = "
+   _____         _____  ____  _____  
+  / ____|  /\   / ____|/ __ \|  __ \ 
+ | (___   /  \ | |  __| |  | | |__) |
+  \___ \ / /\ \| | |_ | |  | |  _  / 
+  ____) / ____ \ |__| | |__| | | \ \ 
+ |_____/_/    \_\_____|\____/|_|  \_\                                           
+    ";
+
         echo "<pre id='terminal-output' style='background-color: black; color: green; padding: 10px; height: 500px; overflow-y: auto;'>";
+        echo "<span style='color: cyan;'>$sagorAsciiArt</span><br><br>";
         ob_implicit_flush(true);
 
         foreach ($commands as $command) {
@@ -34,8 +50,13 @@ class GithubController
 
             try {
                 $process->run(function ($type, $buffer) {
-                    echo nl2br(htmlspecialchars($buffer)) . "\n";
-                    echo "<script>document.getElementById('terminal-output').scrollTop = document.getElementById('terminal-output').scrollHeight;</script>";
+                    $lines = explode("\n", $buffer);
+                    foreach ($lines as $line) {
+                        if (!str_starts_with(trim($line), 'From')) {
+                            echo nl2br(htmlspecialchars($line)) . "\n";
+                            echo "<script>document.getElementById('terminal-output').scrollTop = document.getElementById('terminal-output').scrollHeight;</script>";
+                        }
+                    }
                     @ob_flush();
                     flush();
                 });
@@ -49,5 +70,7 @@ class GithubController
         }
 
         echo "</pre>";
+
+        return;
     }
 }
