@@ -31,18 +31,39 @@ class GithubController
         }
 
         // ASCII Art for "SAGOR"
-        $sagorAsciiArt = "
-   _____         _____  ____  _____  
-  / ____|  /\   / ____|/ __ \|  __ \ 
- | (___   /  \ | |  __| |  | | |__) |
-  \___ \ / /\ \| | |_ | |  | |  _  / 
-  ____) / ____ \ |__| | |__| | | \ \ 
- |_____/_/    \_\_____|\____/|_|  \_\                                           
-    ";
+//         $sagorAsciiArt = "
+//    _____         _____  ____  _____  
+//   / ____|  /\   / ____|/ __ \|  __ \ 
+//  | (___   /  \ | |  __| |  | | |__) |
+//   \___ \ / /\ \| | |_ | |  | |  _  / 
+//   ____) / ____ \ |__| | |__| | | \ \ 
+//  |_____/_/    \_\_____|\____/|_|  \_\                                           
+//     ";
 
-        echo "<pre id='terminal-output' style='background-color: black; color: green; padding: 10px; height: 500px; overflow-y: auto;'>";
-        echo "<span style='color: cyan;'>$sagorAsciiArt</span><br><br>";
-        ob_implicit_flush(true);
+//         echo "<pre id='terminal-output' style='background-color: black; color: green; padding: 10px; height: 500px; overflow-y: auto;'>";
+//         echo "<span style='color: cyan;'>$sagorAsciiArt</span><br><br>";
+//         ob_implicit_flush(true);
+
+
+$sagorAsciiArt = "
+ ▒▓██████████████▓▒░ ░▒▓██████▓▒░░▒▓█▓▒░░▒▓█▓▒░       ░▒▓███████▓▒░░▒▓██████▓▒░ ░▒▓██████▓▒░ ░▒▓██████▓▒░░▒▓███████▓▒░  
+░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ 
+░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ 
+░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓████████▓▒░       ░▒▓██████▓▒░░▒▓████████▓▒░▒▓█▓▒▒▓███▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓███████▓▒░  
+░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░             ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ 
+░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░             ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ 
+░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓██████▓▒░░▒▓█▓▒░░▒▓█▓▒░      ░▒▓███████▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓██████▓▒░ ░▒▓██████▓▒░░▒▓█▓▒░░▒▓█▓▒░                                          
+       ";
+   
+       echo '
+       <div style="background-color: black; color: green; padding: 10px; ">
+           <div style="color: cyan; white-space: pre; font-family: monospace; padding-bottom: 10px; margin-left:15%;">
+               ' . htmlspecialchars($sagorAsciiArt) . '
+           </div>
+           <div id="terminal-output" style="height: 400px; overflow-y: auto; font-family: monospace; margin-top: 10px; white-space: pre-wrap;">
+       ';
+   
+       ob_implicit_flush(true);
 
         foreach ($commands as $command) {
             $process = Process::fromShellCommandline($command);
