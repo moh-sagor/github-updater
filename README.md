@@ -88,6 +88,16 @@ This route:
 
 **Note**: The route is protected by the `web` middleware. Ensure you have appropriate authentication or authorization middleware if you want to restrict access.
 
+
+If You want Another middleware you can you use in your web.php file.
+
+```bash
+Route::middleware(['web', 'auth'])->group(function () {
+    Route::get('/github-pull', [GithubController::class, 'executeCommands'])
+        ->name('github.pull');
+});
+```
+
 ## Example Workflow
 1. Configure your `.env` file with your GitHub credentials and repository link.
 2. Run the console command or access the web route to pull updates and run migrations/seeds automatically.
