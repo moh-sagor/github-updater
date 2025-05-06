@@ -30,19 +30,7 @@ class GithubController
             $commands[] = trim($command);
         }
 
-        // ASCII Art for "SAGOR"
-//         $sagorAsciiArt = "
-//    _____         _____  ____  _____  
-//   / ____|  /\   / ____|/ __ \|  __ \ 
-//  | (___   /  \ | |  __| |  | | |__) |
-//   \___ \ / /\ \| | |_ | |  | |  _  / 
-//   ____) / ____ \ |__| | |__| | | \ \ 
-//  |_____/_/    \_\_____|\____/|_|  \_\                                           
-//     ";
-
-//         echo "<pre id='terminal-output' style='background-color: black; color: green; padding: 10px; height: 500px; overflow-y: auto;'>";
-//         echo "<span style='color: cyan;'>$sagorAsciiArt</span><br><br>";
-//         ob_implicit_flush(true);
+   
 
 
 $sagorAsciiArt = "
