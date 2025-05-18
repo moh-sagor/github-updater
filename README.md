@@ -7,7 +7,7 @@ A Laravel package for automated GitHub pulls and running Artisan commands, devel
 
 ## Requirements
 - PHP 7.4–8.4
-- Laravel 8.x, 9.x, 10.x, or 11.x
+- Laravel 8.x, 9.x, 10.x, 11.x or 12.x 
 - Git installed on the server
 
 **Note**: PHP 7.4 reached end-of-life on November 28, 2022, and no longer receives security updates. We recommend using PHP 8.0 or higher for security and performance reasons.
