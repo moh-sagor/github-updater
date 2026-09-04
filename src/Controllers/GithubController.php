@@ -18,6 +18,7 @@ class GithubController
         $repoLink = config('github-updater.github_repo_link');
         $artisanCommands = config('github-updater.artisan_commands');
 
+        $repositoryUrl = null;
         if (!empty($repoLink)) {
             $cleanRepo = preg_replace('/^https?:\/\//', '', $repoLink);
             if (!empty($userName) && !empty($githubToken)) {
@@ -230,7 +231,13 @@ class GithubController
         }
 
         foreach ($commands as $command) {
-            echo "<div class='log-line log-cmd'>&gt; Executing: " . htmlspecialchars($command) . "</div>";
+            $isGitPull = function_exists('str_starts_with')
+                ? str_starts_with(trim($command), 'git pull')
+                : (strncmp(trim($command), 'git pull', 8) === 0);
+
+            $displayCommand = $isGitPull ? 'git pull' : $command;
+
+            echo "<div class='log-line log-cmd'>&gt; Executing: " . htmlspecialchars($displayCommand) . "</div>";
             echo "<script>var t=document.getElementById('terminal-output');if(t)t.scrollTop=t.scrollHeight;</script>";
             if (function_exists('ob_flush')) { @ob_flush(); }
             flush();
@@ -242,7 +249,7 @@ class GithubController
             $process->setTimeout(0);
 
             try {
-                $process->run(function ($type, $buffer) {
+                $process->run(function ($type, $buffer) use ($repositoryUrl, $githubToken) {
                     $lines = explode("\n", $buffer);
                     foreach ($lines as $line) {
                         $trimmedLine = trim($line);
@@ -259,7 +266,17 @@ class GithubController
                             } else if (stripos($trimmedLine, 'INFO') !== false || stripos($trimmedLine, 'DONE') !== false || stripos($trimmedLine, 'Nothing to migrate') !== false || stripos($trimmedLine, 'Seeding') !== false) {
                                 $class .= ' log-success';
                             }
-                            echo "<div class='{$class}'>" . htmlspecialchars($line) . "</div>";
+
+                            $sanitizedLine = $line;
+                            if (!empty($repositoryUrl)) {
+                                $sanitizedLine = str_replace($repositoryUrl, 'git pull', $sanitizedLine);
+                            }
+                            if (!empty($githubToken)) {
+                                $sanitizedLine = str_replace($githubToken, '***', $sanitizedLine);
+                            }
+                            $sanitizedLine = preg_replace('/https?:\/\/[^:\s]+:[^@\s]+@/', 'https://***@', $sanitizedLine);
+
+                            echo "<div class='{$class}'>" . htmlspecialchars($sanitizedLine) . "</div>";
                             echo "<script>var t=document.getElementById('terminal-output');if(t)t.scrollTop=t.scrollHeight;</script>";
                         }
                     }
@@ -273,7 +290,16 @@ class GithubController
                     throw new ProcessFailedException($process);
                 }
             } catch (ProcessFailedException $exception) {
-                echo "<div class='log-line log-error'>[✘] Command failed: " . htmlspecialchars($exception->getMessage()) . "</div>";
+                $errorMessage = $exception->getMessage();
+                if (!empty($repositoryUrl)) {
+                    $errorMessage = str_replace($repositoryUrl, 'git pull', $errorMessage);
+                }
+                if (!empty($githubToken)) {
+                    $errorMessage = str_replace($githubToken, '***', $errorMessage);
+                }
+                $errorMessage = preg_replace('/https?:\/\/[^:\s]+:[^@\s]+@/', 'https://***@', $errorMessage);
+
+                echo "<div class='log-line log-error'>[✘] Command failed: " . htmlspecialchars($errorMessage) . "</div>";
                 echo "<script>var t=document.getElementById('terminal-output');if(t)t.scrollTop=t.scrollHeight;</script>";
             }
         }

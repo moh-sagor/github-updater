@@ -20,6 +20,7 @@ class GithubPullCommand extends Command
         $repoLink = config('github-updater.github_repo_link');
         $artisanCommands = config('github-updater.artisan_commands');
 
+        $repositoryUrl = null;
         if (!empty($repoLink)) {
             $cleanRepo = preg_replace('/^https?:\/\//', '', $repoLink);
             if (!empty($userName) && !empty($githubToken)) {
@@ -54,9 +55,25 @@ class GithubPullCommand extends Command
             $process->setTimeout(0);
             try {
                 $process->mustRun();
-                $this->info($process->getOutput());
+                $output = $process->getOutput();
+                if (!empty($repositoryUrl)) {
+                    $output = str_replace($repositoryUrl, 'git pull', $output);
+                }
+                if (!empty($githubToken)) {
+                    $output = str_replace($githubToken, '***', $output);
+                }
+                $output = preg_replace('/https?:\/\/[^:\s]+:[^@\s]+@/', 'https://***@', $output);
+                $this->info($output);
             } catch (ProcessFailedException $exception) {
-                $this->error("Error: " . $exception->getMessage());
+                $errorMessage = $exception->getMessage();
+                if (!empty($repositoryUrl)) {
+                    $errorMessage = str_replace($repositoryUrl, 'git pull', $errorMessage);
+                }
+                if (!empty($githubToken)) {
+                    $errorMessage = str_replace($githubToken, '***', $errorMessage);
+                }
+                $errorMessage = preg_replace('/https?:\/\/[^:\s]+:[^@\s]+@/', 'https://***@', $errorMessage);
+                $this->error("Error: " . $errorMessage);
             }
         }
 
