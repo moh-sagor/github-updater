@@ -15,13 +15,42 @@ class GithubPullCommand extends Command
     {
         $this->info("Pulling latest changes from GitHub...");
 
-        $commands = [
-            "git pull",
-            "php artisan migrate --force",
-        ];
+        $githubToken = config('github-updater.github_token');
+        $userName = config('github-updater.github_username');
+        $repoLink = config('github-updater.github_repo_link');
+        $artisanCommands = config('github-updater.artisan_commands');
+
+        if (!empty($repoLink)) {
+            $cleanRepo = preg_replace('/^https?:\/\//', '', $repoLink);
+            if (!empty($userName) && !empty($githubToken)) {
+                $repositoryUrl = "https://{$userName}:{$githubToken}@{$cleanRepo}";
+            } else {
+                $repositoryUrl = "https://{$cleanRepo}";
+            }
+            $gitPullCmd = "git pull {$repositoryUrl}";
+        } else {
+            $gitPullCmd = "git pull";
+        }
+
+        $commands = [$gitPullCmd];
+
+        if (!empty($artisanCommands)) {
+            $artisanCommandsArray = explode(',', $artisanCommands);
+            foreach ($artisanCommandsArray as $command) {
+                $trimmed = trim($command);
+                if (!empty($trimmed)) {
+                    $commands[] = $trimmed;
+                }
+            }
+        } else {
+            $commands[] = "php artisan migrate --force";
+        }
 
         foreach ($commands as $command) {
-            $process = Process::fromShellCommandline($command);
+            $process = method_exists(Process::class, 'fromShellCommandline')
+                ? Process::fromShellCommandline($command)
+                : new Process($command);
+
             $process->setTimeout(0);
             try {
                 $process->mustRun();
@@ -32,5 +61,7 @@ class GithubPullCommand extends Command
         }
 
         $this->info("GitHub pull completed.");
+
+        return 0;
     }
 }

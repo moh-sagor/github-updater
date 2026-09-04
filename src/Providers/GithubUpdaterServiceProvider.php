@@ -22,6 +22,21 @@ class GithubUpdaterServiceProvider extends ServiceProvider
     protected $routesPath;
 
     /**
+     * Register the application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->configPath = __DIR__ . '/../../config/github-updater.php';
+
+        // Merge Config
+        if (file_exists($this->configPath)) {
+            $this->mergeConfigFrom($this->configPath, 'github-updater');
+        }
+    }
+
+    /**
      * Bootstrap the application services.
      *
      * @return void
@@ -29,7 +44,9 @@ class GithubUpdaterServiceProvider extends ServiceProvider
     public function boot()
     {
         // Define paths
-        $this->configPath = __DIR__ . '/../../config/github-updater.php';
+        if (!$this->configPath) {
+            $this->configPath = __DIR__ . '/../../config/github-updater.php';
+        }
         $this->routesPath = __DIR__ . '/../Routes/web.php';
 
         // Load Routes
@@ -53,19 +70,6 @@ class GithubUpdaterServiceProvider extends ServiceProvider
             $this->commands([
                 GithubPullCommand::class,
             ]);
-        }
-    }
-
-    /**
-     * Register the application services.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        // Merge Config
-        if (file_exists($this->configPath)) {
-            $this->mergeConfigFrom($this->configPath, 'github-updater');
         }
     }
 }

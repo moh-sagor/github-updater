@@ -1,25 +1,104 @@
 # GithubUpdater for Laravel
 
-A Laravel package for automated GitHub pulls and running Artisan commands, developed by Md Sagor Hossain.
+<p align="center">
+  <img src="https://raw.githubusercontent.com/laravel/art/master/logo-laravel-readme.png" width="120" alt="Laravel Logo">
+</p>
 
-## Description
-`sagor/github-updater` is a Laravel package that simplifies pulling the latest changes from a GitHub repository and executing predefined Artisan commands (e.g., migrations, seeding) in a single step. It provides both a console command (`php artisan github:pull`) and a web route (`/github-pull`) for convenience.
+<p align="center">
+  <strong>Automated GitHub repository updates and Artisan command deployment pipeline for Laravel.</strong>
+</p>
 
-## Requirements
-- PHP 7.4–8.4
-- Laravel 8.x, 9.x, 10.x, 11.x or 12.x 
-- Git installed on the server
+<p align="center">
+  <a href="https://packagist.org/packages/sagor/github-updater"><img src="https://img.shields.io/badge/Laravel-5.5%20to%2013.x-FF2D20.svg?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel 5.5 to 13.x"></a>
+  <a href="https://packagist.org/packages/sagor/github-updater"><img src="https://img.shields.io/badge/PHP-7.2%20to%208.4%2B-777BB4.svg?style=for-the-badge&logo=php&logoColor=white" alt="PHP 7.2 to 8.4+"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge" alt="License MIT"></a>
+</p>
 
-**Note**: PHP 7.4 reached end-of-life on November 28, 2022, and no longer receives security updates. We recommend using PHP 8.0 or higher for security and performance reasons.
+---
 
-## Installation
-Install the package via Composer:
+## 📖 Overview
+
+**`sagor/github-updater`** is a high-performance Laravel package designed to simplify and automate repository pulling and post-update deployment tasks. With support for **Laravel 5.5 up to Laravel 13.x** and **PHP 7.2 through PHP 8.4+**, it provides a seamless way to pull updates from private or public GitHub repositories and execute chained Artisan commands (migrations, seeders, cache clearing, optimization) in a single action.
+
+Whether triggered via **Artisan CLI** or the built-in **Web Terminal route** (with real-time streaming output), `github-updater` ensures your application stays updated effortlessly.
+
+---
+
+## ✨ Features
+
+- 🚀 **Universal Compatibility**: Full support for Laravel versions `5.5`, `5.8`, `6.x`, `7.x`, `8.x`, `9.x`, `10.x`, `11.x`, `12.x`, and `13.x`.
+- 🐘 **Modern & Legacy PHP Support**: Tested and compatible across PHP `7.2`, `7.4`, `8.0`, `8.1`, `8.2`, `8.3`, and `8.4+`.
+- 🔑 **Secure Authentication**: Supports Personal Access Tokens (PAT) and custom repository URLs.
+- ⚡ **Artisan Command Chaining**: Run multiple Artisan tasks sequentially after pull (e.g., `migrate --force`, `db:seed`, `config:cache`).
+- 🖥️ **Web Terminal UI**: Built-in dark-themed web terminal output with real-time autoscrolling logs.
+- 💻 **Console Integration**: Dedicated `php artisan github:pull` command for server scripts and CRON tasks.
+- 📦 **Zero-Config Auto Discovery**: Automatically registers package service providers and aliases.
+
+---
+
+## 🏗️ Architecture & Execution Flow
+
+The following diagram illustrates how requests flow through `GithubUpdater`:
+
+```mermaid
+flowchart TD
+    subgraph Triggers ["Deployment Triggers"]
+        A["🌐 Web Request: GET /github-pull"]
+        B["💻 CLI Command: php artisan github:pull"]
+    end
+
+    subgraph Package ["GithubUpdater Core Engine"]
+        C{"Router / Controller"}
+        D{"Console Handler"}
+        E["Load Configuration<br/>(config/github-updater.php)"]
+        F["Build Git URL with PAT Token<br/>(https://user:token@repo.git)"]
+        G["Run 'git pull' Subprocess"]
+        H["Parse ARTISAN_COMMANDS Pipeline"]
+        I["Execute Chained Artisan Commands"]
+    end
+
+    subgraph Outputs ["Execution Feedback"]
+        J["🖥️ Streamed Web Terminal UI"]
+        K["📋 Console Log Output"]
+    end
+
+    A --> C
+    B --> D
+    C --> E
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+    H --> I
+    I -->|Web Output| J
+    I -->|CLI Output| K
+```
+
+---
+
+## 📋 Compatibility Matrix
+
+| Technology | Supported Versions | Notes |
+| :--- | :--- | :--- |
+| **Laravel Framework** | `^5.5`, `^5.8`, `^6.0`, `^7.0`, `^8.0`, `^9.0`, `^10.0`, `^11.0`, `^12.0`, `^13.0` | Full backward & forward compatibility |
+| **PHP Runtime** | `^7.2`, `^7.4`, `^8.0`, `^8.1`, `^8.2`, `^8.3`, `^8.4+` | Handles cross-version polyfills & processes |
+| **Symfony Process** | `~3.4`, `^4.4`, `^5.0`, `^6.0`, `^7.0`, `^8.0` | Adapts dynamically to installed Symfony components |
+
+---
+
+## 📥 Installation
+
+Install the package into your Laravel project using Composer:
 
 ```bash
 composer require sagor/github-updater
 ```
 
-The package uses Laravel's auto-discovery to register the service provider. If auto-discovery is disabled, manually add the service provider to `config/app.php`:
+### Service Provider Registration
+
+For Laravel projects using **Package Auto-Discovery**, the service provider will automatically register.
+
+If auto-discovery is disabled in your project, manually add `GithubUpdaterServiceProvider` to the `providers` array in `config/app.php`:
 
 ```php
 'providers' => [
@@ -28,109 +107,159 @@ The package uses Laravel's auto-discovery to register the service provider. If a
 ],
 ```
 
-## Configuration
-Publish the configuration file to customize the package settings:
+---
+
+## ⚙️ Configuration
+
+Publish the package configuration file to your application's `config/` directory:
 
 ```bash
 php artisan vendor:publish --tag=config
 ```
 
-This will create a `config/github-updater.php` file with the following default configuration:
+Or target the specific provider:
+
+```bash
+php artisan vendor:publish --provider="Sagor\GithubUpdater\Providers\GithubUpdaterServiceProvider"
+```
+
+This creates `config/github-updater.php`:
 
 ```php
+<?php
+
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | GitHub Personal Access Token
+    |--------------------------------------------------------------------------
+    | Your GitHub Personal Access Token (PAT) used for authenticating
+    | private repository git operations.
+    */
     'github_token' => env('GITHUB_TOKEN', ''),
+
+    /*
+    |--------------------------------------------------------------------------
+    | GitHub Username / Organization
+    |--------------------------------------------------------------------------
+    | The owner username or organization of the repository.
+    */
     'github_username' => env('GITHUB_USERNAME', ''),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Repository Link
+    |--------------------------------------------------------------------------
+    | Target repository URL (e.g. github.com/username/repository.git)
+    */
     'github_repo_link' => env('GITHUB_REPO_LINK', ''),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Post-Pull Artisan Commands
+    |--------------------------------------------------------------------------
+    | Comma-separated list of Artisan commands executed sequentially after
+    | a successful git pull.
+    */
     'artisan_commands' => env('ARTISAN_COMMANDS', 'php artisan migrate --force, php artisan db:seed'),
 ];
 ```
 
-### Environment Variables
-Set the following environment variables in your `.env` file:
+### Environment Variables (`.env`)
+
+Add and configure the following variables in your project's `.env` file:
 
 ```env
-GITHUB_TOKEN=your_github_personal_access_token
-GITHUB_USERNAME=your_github_username
-GITHUB_REPO_LINK=your_repository_link (e.g., github.com/moh-sagor/project-url.git)
-ARTISAN_COMMANDS="php artisan migrate --force,php artisan db:seed"
+GITHUB_TOKEN=ghp_YourPersonalAccessToken1234567890
+GITHUB_USERNAME=your-github-username
+GITHUB_REPO_LINK=github.com/your-username/your-repository.git
+ARTISAN_COMMANDS="php artisan migrate --force, php artisan db:seed, php artisan config:cache"
 ```
 
-**Security Note**: Ensure your `GITHUB_TOKEN` is kept secure and not exposed in logs or public repositories.
+> ⚠️ **Security Reminder**: Never commit your `GITHUB_TOKEN` to version control. Always set it inside server `.env` files.
 
-## Usage
+---
 
-### 1. **Console Command**
-Run the following Artisan command to pull the latest changes from GitHub and execute the configured Artisan commands:
+## 🚀 Usage
+
+### 1. CLI Artisan Command
+
+To perform an update directly from the command line or CI/CD deployment scripts:
 
 ```bash
 php artisan github:pull
 ```
 
-This command:
-- Executes `git pull` to fetch the latest changes from the GitHub repository.
-- Runs the Artisan commands specified in `ARTISAN_COMMANDS` (e.g., `php artisan migrate --force` and `php artisan db:seed`).
+**What it does:**
+1. Connects to GitHub using your configured authentication parameters.
+2. Executes `git pull` from the remote repository branch.
+3. Sequentially executes all Artisan commands listed in `ARTISAN_COMMANDS`.
+4. Outputs execution progress directly to stdout.
 
-**Output**:
-The command provides feedback on the progress and any errors encountered.
+---
 
-### 2. **Web Route**
-Access the web route to trigger the same functionality via a browser or API:
+### 2. Web Interface (`/github-pull`)
 
-```
+Access the streaming terminal interface via browser:
+
+```http
 GET /github-pull
 ```
 
-This route:
-- Pulls the latest changes from GitHub.
-- Executes the configured Artisan commands.
-- Displays the output in a terminal-like format in the browser.
+**Interface Highlights:**
+- Custom terminal dark mode container.
+- ASCII Banner display.
+- Real-time line-by-line output streaming with autoscroll support.
 
-**Note**: The route is protected by the `web` middleware. Ensure you have appropriate authentication or authorization middleware if you want to restrict access.
+#### Customizing Middleware & Route Security
 
+By default, the `/github-pull` route uses the `web` middleware group. To restrict access to authorized users or admins, group the route in your `routes/web.php` file:
 
-If You want Another middleware you can you use in your web.php file.
+```php
+use Sagor\GithubUpdater\Controllers\GithubController;
 
-```bash
-Route::middleware(['web', 'auth'])->group(function () {
+Route::middleware(['web', 'auth', 'can:manage-deployments'])->group(function () {
     Route::get('/github-pull', [GithubController::class, 'executeCommands'])
         ->name('github.pull');
 });
 ```
 
-## Example Workflow
-1. Configure your `.env` file with your GitHub credentials and repository link.
-2. Run the console command or access the web route to pull updates and run migrations/seeds automatically.
+---
 
-## Testing
-To test the package locally:
-1. Clone the repository and install dependencies:
-   ```bash
-   composer install
-   ```
-2. Set up a Laravel project with PHP 7.4–8.4 and Laravel 8–11.
-3. Configure the environment variables and test the console command and web route.
+## 🔒 Security Best Practices
 
-## Contributing
-Contributions are welcome! Please follow these steps:
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix.
-3. Submit a pull request with your changes.
-
-## License
-This package is open-source software licensed under the [MIT License](LICENSE).
-
-## Support
-For issues or questions, please open an issue on the [GitHub repository](https://github.com/moh-sagor/github-updater).
-
-## Acknowledgments
-Developed by Md Sagor Hossain ([sagorhassain4@gmail.com](mailto:sagorhassain4@gmail.com)).
+1. **Protect Web Routes**: Always wrap `/github-pull` with authentication middleware (`auth`, admin roles) to prevent unauthorized execution.
+2. **Token Permissions**: Scope your GitHub Personal Access Token (PAT) with minimum required permissions (`repo:status`, `repo_deployment`, or `contents:read`).
+3. **Environment Security**: Keep `.env` permissions strict (`chmod 600 .env`) on production servers.
 
 ---
 
-### Notes for Customization
-- Replace `https://github.com/moh-sagor/github-updater` with your actual GitHub repository URL if it differs.
-- If you have additional features, testing instructions, or contributors, add them to the relevant sections.
-- If you have a `LICENSE` file, ensure it exists in your repository and matches the MIT License mentioned.
+## 🧪 Testing
 
-This README is concise, clear, and follows best practices for open-source Laravel packages. You can further expand it with screenshots, more detailed examples, or additional sections like "Changelog" or "Roadmap" if applicable. Let me know if you’d like to adjust or add anything specific!
+The package includes a full PHPUnit test suite using **Orchestra Testbench**. To run unit and feature tests:
+
+```bash
+vendor/bin/phpunit
+```
+
+### Test Coverage Includes:
+- Service Provider Registration & Config Merging.
+- Named Route Binding (`github.pull`).
+- Artisan Command Registration (`github:pull`).
+
+---
+
+## 📄 License
+
+The MIT License (MIT). Please see [LICENSE](LICENSE) for more information.
+
+---
+
+## 👨‍💻 Author & Support
+
+Developed and maintained by **Md Sagor Hossain** ([sagorhassain4@gmail.com](mailto:sagorhassain4@gmail.com)).
+
+- GitHub: [@moh-sagor](https://github.com/moh-sagor)
+- Repository: [github.com/moh-sagor/github-updater](https://github.com/moh-sagor/github-updater)
+
+If you find this package helpful, please give it a ⭐️ on GitHub!
